@@ -1,0 +1,63 @@
+# ---------------------------------------------------------------------------
+# Snakemake 7.x SLURM profile.   Use with:  snakemake --profile profiles/slurm
+#
+# >>> EDIT default-resources BELOW: set slurm_partition (and account if your
+# >>> site requires one) before the first run.
+# ---------------------------------------------------------------------------
+
+# The submit command. Snakemake substitutes {rule}, {jobid}, {threads} and
+# anything under {resources.*}; sbatch itself expands %j (the SLURM job id).
+cluster:
+  mkdir -p logs/slurm &&
+  sbatch
+    --partition={resources.slurm_partition}
+    --cpus-per-task={threads}
+    --mem={resources.mem_mb}
+    --time={resources.runtime}
+    --job-name=smk.{rule}.{jobid}
+    --output=logs/slurm/{rule}.{jobid}.%j.out
+    --error=logs/slurm/{rule}.{jobid}.%j.err
+    --parsable
+
+# --- Optional sbatch flags -------------------------------------------------
+# Add these INSIDE the block above (as extra indented lines) if your site
+# needs them. Do not leave them in with empty values -- sbatch will reject
+# `--account=` with nothing after it.
+#
+#     --account=your_project_code
+#     --qos=normal
+#     --nodelist={resources.nodelist}      # pin to one exact node (sbatch -w)
+#     --exclusive                          # whole node, no co-tenants
+#
+# If you add --nodelist, also add a matching default under default-resources,
+# e.g.  - nodelist="node042"
+# ---------------------------------------------------------------------------
+
+# How Snakemake finds out whether a submitted job succeeded. Without this it
+# cannot distinguish "still queued" from "died", and will hang or mis-report.
+cluster-status: "profiles/slurm/status-sacct.sh"
+cluster-cancel: "scancel"
+cluster-cancel-nargs: 50
+
+# Fallback values for any rule that does not set them itself.
+# runtime is in MINUTES, mem_mb in MEGABYTES.
+default-resources:
+  - slurm_partition="CHANGE_ME"
+  - mem_mb=1000
+  - runtime=10
+
+# Max jobs in flight at once. Raise once you know your queue limits.
+jobs: 8
+
+# Be gentle with the scheduler -- some sites throttle or ban aggressive polling.
+max-jobs-per-second: 5
+max-status-checks-per-second: 1
+
+# Shared filesystems lag behind job completion; wait this long for outputs
+# to appear before declaring a rule failed. Increase on a slow/parallel FS.
+latency-wait: 60
+
+printshellcmds: True
+rerun-incomplete: True
+keep-going: True
+restart-times: 0

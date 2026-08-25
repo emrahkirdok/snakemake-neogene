@@ -1,0 +1,10 @@
+# Samples to fan out over. Each one becomes a separate SLURM job.
+samples:
+  - sampleA
+  - sampleB
+  - sampleC
+  - sampleD
+
+# How long each dummy job sleeps, in seconds. Keep this >= 30 so the jobs
+# stay in `squeue` long enough for you to actually look at them.
+sleep_seconds: 45
