@@ -1,0 +1,87 @@
+
+cluster-cancel: "scancel"
+restart-times: "0"
+jobscript: "slurm-jobscript.sh"
+cluster: "slurm-submit.py"
+cluster-status: "slurm-status.py"
+max-jobs-per-second: "10"
+max-status-checks-per-second: "1"
+local-cores: 1
+latency-wait: "5"
+use-conda: "False"
+use-singularity: "False"
+jobs: "100"
+printshellcmds: "True"
+
+default-resources:
+  - runtime=360
+  - mem_mb=2000
+  - disk_mb=10000
+
+# Amount of threads per rule
+# NB. Dardel nodes have 256GB and contains 128 cores (but 256 logical cores/virtual cores) of 2GB (2000MB) (or 1GB if we count in logical cores, which seems to be the case, but still needs to be investigated.). 
+set-threads:
+  - Bowtie2_Alignment=128
+  - Breadth_Of_Coverage=8
+  - Build_Malt_DB=128
+  - KrakenUniq=128
+  - KrakenUniq2Krona=8
+  - Malt=128
+  - Malt_Extract=8
+  - Malt_QuantifyAbundance=16
+  - MultiQC=2
+  - MapDamage=128
+  - Post_Processing=8
+
+# Need snakemake>=6.5.0 for this to work
+# NB. the mem_mb value should be the amount_cores_given_above * 1000MB BUT ON DARDEL, not the whole memory is available to use. Only 227328MB is available for a thin node instead of 256000MB (I used therefore 227300. It is not possible to use two nodes to increase the memory. You need to use one large memory node then.
+# Dardel has several partitions
+# "main" whole node usage (256GB) for max 24 hours
+# "long" whole node usage (256GB) for max 7 days
+# "shared" shared node usage (256GB) for max 24 hours for small jobs
+# "memory" Large/Huge/Giant whole nodes (512GB - 1TB - 2TB) for max 24 hours
+# Actual memory that you can request on the memory nodes: 456700, 915450, 1832960
+# disk_mb is a value in MB for the max size for the output files
+# runtime is a value in minutes for the maximum time
+set-resources:
+  - Bowtie2_Alignment:partition=memory
+  - Bowtie2_Alignment:runtime=1440
+  - Bowtie2_Alignment:mem_mb=456700
+  - Breadth_Of_Coverage:mem_mb=16000
+  - Build_Malt_DB:partition=memory
+  - Build_Malt_DB:runtime=1440
+  - Build_Malt_DB:mem_mb=456700
+  - KrakenUniq:partition=memory
+  - KrakenUniq:runtime=1440
+  - KrakenUniq:mem_mb=915450
+  - KrakenUniq2Krona:partition=shared
+  - KrakenUniq2Krona:runtime=1440
+  - KrakenUniq2Krona:mem_mb=16000
+  - Malt:partition=memory
+  - Malt:runtime=1440
+  - Malt:mem_mb=915450
+  - Malt:disk_mb=1000000
+  - Malt_Extract:partition=shared
+  - Malt_Extract:mem_mb=16000
+  - Malt_QuantifyAbundance:partition=shared
+  - Malt_QuantifyAbundance:mem_mb=32000
+  - MapDamage:partition=memory
+  - MapDamage:runtime=1440
+  - MapDamage:mem_mb=456700
+  - MultiQC:mem_mb=4000
+  - Post_Processing:partition=shared
+  - Post_Processing:mem_mb=16000
+
+# Example resource configuration
+# default-resources:
+#   - runtime=100
+#   - mem_mb=6000
+#   - disk_mb=1000000
+# # set-threads: map rule names to threads
+# set-threads:
+#   - single_core_rule=1
+#   - multi_core_rule=10
+# # set-resources: map rule names to resources in general
+# set-resources:
+#   - high_memory_rule:mem_mb=12000
+#   - long_running_rule:runtime=1200
