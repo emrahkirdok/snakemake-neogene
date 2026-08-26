@@ -21,16 +21,16 @@ default-resources:
 # Amount of threads per rule
 # NB. Dardel nodes have 256GB and contains 128 cores (but 256 logical cores/virtual cores) of 2GB (2000MB) (or 1GB if we count in logical cores, which seems to be the case, but still needs to be investigated.). 
 set-threads:
-  - Bowtie2_Alignment=128
+  - Bowtie2_Alignment=40
   - Breadth_Of_Coverage=8
-  - Build_Malt_DB=128
-  - KrakenUniq=128
+  - Build_Malt_DB=40
+  - KrakenUniq=40
   - KrakenUniq2Krona=8
-  - Malt=128
-  - Malt_Extract=8
+  - Malt=80
+  - Malt_Extract=16
   - Malt_QuantifyAbundance=16
   - MultiQC=2
-  - MapDamage=128
+  - MapDamage=40
   - Post_Processing=8
 
 # Need snakemake>=6.5.0 for this to work
@@ -44,32 +44,32 @@ set-threads:
 # disk_mb is a value in MB for the max size for the output files
 # runtime is a value in minutes for the maximum time
 set-resources:
-  - Bowtie2_Alignment:partition=memory
+  - Bowtie2_Alignment:partition=chimp
   - Bowtie2_Alignment:runtime=1440
   - Bowtie2_Alignment:mem_mb=456700
   - Breadth_Of_Coverage:mem_mb=16000
-  - Build_Malt_DB:partition=memory
+  - Build_Malt_DB:partition=chimp
   - Build_Malt_DB:runtime=1440
   - Build_Malt_DB:mem_mb=456700
-  - KrakenUniq:partition=memory
+  - KrakenUniq:partition=chimp
   - KrakenUniq:runtime=1440
   - KrakenUniq:mem_mb=915450
-  - KrakenUniq2Krona:partition=shared
+  - KrakenUniq2Krona:partition=chimp
   - KrakenUniq2Krona:runtime=1440
   - KrakenUniq2Krona:mem_mb=16000
-  - Malt:partition=memory
+  - Malt:partition=chimp
   - Malt:runtime=1440
   - Malt:mem_mb=915450
   - Malt:disk_mb=1000000
-  - Malt_Extract:partition=shared
+  - Malt_Extract:partition=chimp
   - Malt_Extract:mem_mb=16000
-  - Malt_QuantifyAbundance:partition=shared
+  - Malt_QuantifyAbundance:partition=chimp
   - Malt_QuantifyAbundance:mem_mb=32000
-  - MapDamage:partition=memory
+  - MapDamage:partition=chimp
   - MapDamage:runtime=1440
   - MapDamage:mem_mb=456700
   - MultiQC:mem_mb=4000
-  - Post_Processing:partition=shared
+  - Post_Processing:partition=chimp
   - Post_Processing:mem_mb=16000
 
 # Example resource configuration
