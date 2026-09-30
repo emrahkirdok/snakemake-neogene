@@ -11,7 +11,7 @@
 
 # What the aMeta python submit script used to build for every job:
 #   account + default partition   <- settings.json SBATCH_DEFAULTS
-#   --cpus-per-task               <- {threads}
+#   --nodes                       <- {threads}  (on our cluster 1 node = 1 CPU)
 #   --mem                         <- {resources.mem_mb}  (MB)
 #   --time                        <- {resources.runtime} (minutes)
 # --parsable makes sbatch print only the job id, which cluster-status needs.
@@ -20,8 +20,7 @@ cluster:
   sbatch
     --account=naiss2025-3-58
     --partition={resources.partition}
-    --nodes=1
-    --cpus-per-task={threads}
+    --nodes={threads}
     --mem={resources.mem_mb}
     --time={resources.runtime}
     --job-name=smk-{rule}

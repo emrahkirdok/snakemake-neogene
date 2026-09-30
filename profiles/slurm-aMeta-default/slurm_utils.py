@@ -150,8 +150,10 @@ def convert_job_properties(job_properties, resource_mapping=None):
     for k, v in resource_mapping.items():
         options.update({k: resources[i] for i in v if i in resources})
 
+    # On our cluster one SLURM "node" is one CPU, so threads are requested as
+    # --nodes instead of --cpus-per-task. An explicit `nodes` resource wins.
     if "threads" in job_properties:
-        options["cpus-per-task"] = job_properties["threads"]
+        options.setdefault("nodes", job_properties["threads"])
 
     slurm_opts = resources.get("slurm", "")
     if not isinstance(slurm_opts, str):
