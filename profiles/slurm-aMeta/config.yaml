@@ -1,0 +1,112 @@
+# ---------------------------------------------------------------------------
+# aMeta on SLURM with a plain `sbatch` string (Snakemake 7.x, --cluster mode).
+#
+#   snakemake --profile profiles/slurm-aMeta
+#
+# Replaces profiles/slurm-aMeta-default (slurm-submit.py / slurm-status.py /
+# sidecar / CookieCutter). The per-rule threads and resources below are copied
+# unchanged from that profile, so rules still land on the same partitions with
+# the same memory and walltime.
+# ---------------------------------------------------------------------------
+
+# What the aMeta python submit script used to build for every job:
+#   account + default partition   <- settings.json SBATCH_DEFAULTS
+#   --cpus-per-task               <- {threads}
+#   --mem                         <- {resources.mem_mb}  (MB)
+#   --time                        <- {resources.runtime} (minutes)
+# --parsable makes sbatch print only the job id, which cluster-status needs.
+cluster:
+  mkdir -p logs/slurm &&
+  sbatch
+    --account=naiss2025-3-58
+    --partition={resources.partition}
+    --nodes=1
+    --cpus-per-task={threads}
+    --mem={resources.mem_mb}
+    --time={resources.runtime}
+    --job-name=smk-{rule}
+    --output=logs/slurm/slurm-%j-%N.out
+    --error=logs/slurm/slurm-%j-%N.err
+    --parsable
+
+# Without this, a job SLURM kills (TIMEOUT, OUT_OF_MEMORY, NODE_FAIL) never
+# writes Snakemake's failure marker and the run hangs forever.
+cluster-status: "status-sacct.sh"
+cluster-cancel: "scancel"
+cluster-cancel-nargs: 50
+
+jobs: 6
+latency-wait: 60
+rerun-incomplete: True
+keep-going: True
+printshellcmds: True
+restart-times: 0
+local-cores: 1
+max-jobs-per-second: 5
+max-status-checks-per-second: 1
+use-conda: False
+use-singularity: False
+
+# Every rule needs a value for each {resources.*} used in `cluster:` above,
+# otherwise submission fails with a formatting error.
+# partition="shared" was the default in the old settings.json.
+default-resources:
+  - partition="shared"
+  - runtime=360
+  - mem_mb=2000
+  - disk_mb=10000
+
+# --- Below: copied from profiles/slurm-aMeta-default/config.yaml -------------
+
+# Amount of threads per rule
+# NB. Dardel nodes have 256GB and contains 128 cores (but 256 logical cores/virtual cores) of 2GB (2000MB) (or 1GB if we count in logical cores, which seems to be the case, but still needs to be investigated.).
+set-threads:
+  - Bowtie2_Alignment=128
+  - Breadth_Of_Coverage=8
+  - Build_Malt_DB=128
+  - KrakenUniq=128
+  - KrakenUniq2Krona=8
+  - Malt=128
+  - Malt_Extract=8
+  - Malt_QuantifyAbundance=16
+  - MultiQC=2
+  - MapDamage=128
+  - Post_Processing=8
+
+# NB. the mem_mb value should be the amount_cores_given_above * 1000MB BUT ON DARDEL, not the whole memory is available to use. Only 227328MB is available for a thin node instead of 256000MB (I used therefore 227300. It is not possible to use two nodes to increase the memory. You need to use one large memory node then.
+# Dardel has several partitions
+# "main" whole node usage (256GB) for max 24 hours
+# "long" whole node usage (256GB) for max 7 days
+# "shared" shared node usage (256GB) for max 24 hours for small jobs
+# "memory" Large/Huge/Giant whole nodes (512GB - 1TB - 2TB) for max 24 hours
+# Actual memory that you can request on the memory nodes: 456700, 915450, 1832960
+# disk_mb is a value in MB for the max size for the output files
+# runtime is a value in minutes for the maximum time
+set-resources:
+  - Bowtie2_Alignment:partition=memory
+  - Bowtie2_Alignment:runtime=1440
+  - Bowtie2_Alignment:mem_mb=456700
+  - Breadth_Of_Coverage:mem_mb=16000
+  - Build_Malt_DB:partition=memory
+  - Build_Malt_DB:runtime=1440
+  - Build_Malt_DB:mem_mb=456700
+  - KrakenUniq:partition=memory
+  - KrakenUniq:runtime=1440
+  - KrakenUniq:mem_mb=915450
+  - KrakenUniq2Krona:partition=shared
+  - KrakenUniq2Krona:runtime=1440
+  - KrakenUniq2Krona:mem_mb=16000
+  - Malt:partition=memory
+  - Malt:runtime=1440
+  - Malt:mem_mb=915450
+  - Malt:disk_mb=1000000
+  - Malt_Extract:partition=shared
+  - Malt_Extract:mem_mb=16000
+  - Malt_QuantifyAbundance:partition=shared
+  - Malt_QuantifyAbundance:mem_mb=32000
+  - MapDamage:partition=memory
+  - MapDamage:runtime=1440
+  - MapDamage:mem_mb=456700
+  - MultiQC:mem_mb=4000
+  - Post_Processing:partition=shared
+  - Post_Processing:mem_mb=16000
