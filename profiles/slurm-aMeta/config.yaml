@@ -15,16 +15,19 @@
 #   --mem                         <- {resources.mem_mb}  (MB)
 #   --time                        <- {resources.runtime} (minutes)
 # --parsable makes sbatch print only the job id, which cluster-status needs.
+# --export=ALL hands the environment set up by tools.sh (PATH, PYTHONPATH, ...)
+# to every job, even if the site defaults to exporting nothing.
 cluster:
   mkdir -p logs/slurm &&
   sbatch
+    --export=ALL
     --partition={resources.partition}
     --nodes={threads}
     --mem={resources.mem_mb}
     --time={resources.runtime}
     --job-name=smk-{rule}
-    --output=logs/slurm/slurm-%j-%N.out
-    --error=logs/slurm/slurm-%j-%N.err
+    --output=logs/slurm/slurm-%x-%j.out
+    --error=logs/slurm/slurm-%x-%j.err
     --parsable
 
 # Without this, a job SLURM kills (TIMEOUT, OUT_OF_MEMORY, NODE_FAIL) never
