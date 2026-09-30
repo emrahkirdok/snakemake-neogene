@@ -18,7 +18,6 @@
 cluster:
   mkdir -p logs/slurm &&
   sbatch
-    --account=naiss2025-3-58
     --partition={resources.partition}
     --nodes={threads}
     --mem={resources.mem_mb}
@@ -50,7 +49,7 @@ use-singularity: False
 # otherwise submission fails with a formatting error.
 # partition="shared" was the default in the old settings.json.
 default-resources:
-  - partition="shared"
+  - partition="gibbon"
   - runtime=360
   - mem_mb=2000
   - disk_mb=10000
