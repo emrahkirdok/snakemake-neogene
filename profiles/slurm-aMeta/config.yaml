@@ -85,20 +85,9 @@ set-threads:
 # runtime is a value in minutes for the maximum time
 set-resources:
   - Bowtie2_Alignment:runtime=1440
-  - Bowtie2_Alignment:mem_mb=456700
-  - Breadth_Of_Coverage:mem_mb=16000
   - Build_Malt_DB:runtime=1440
-  - Build_Malt_DB:mem_mb=456700
   - KrakenUniq:runtime=1440
-  - KrakenUniq:mem_mb=915450
   - KrakenUniq2Krona:runtime=1440
-  - KrakenUniq2Krona:mem_mb=16000
   - Malt:runtime=1440
-  - Malt:mem_mb=915450
   - Malt:disk_mb=1000000
-  - Malt_Extract:mem_mb=16000
-  - Malt_QuantifyAbundance:mem_mb=32000
   - MapDamage:runtime=1440
-  - MapDamage:mem_mb=456700
-  - MultiQC:mem_mb=4000
-  - Post_Processing:mem_mb=16000

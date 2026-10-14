@@ -15,9 +15,9 @@
 # --- Option B: plain install directories, added to the front of PATH -------
 # One line per tool directory (the folder that contains the executable).
 export PATH="/usr/local/sw/FastQC/:$PATH"
-export PATH="/usr/local/sw/bowtie2-2.5.1/bowtie2:$PATH"
-export PATH="/usr/local/sw/krakenuniq-1.0.4/krakenuniq:$PATH"
-export PATH="/usr/local/sw/PMDtools/pmdtools.0.60.py:$PATH"
+export PATH="/usr/local/sw/bowtie2-2.5.1/$PATH"
+export PATH="/usr/local/sw/krakenuniq-1.0.4/:$PATH"
+#export PATH="/usr/local/sw/PMDtools/pmdtools.0.60.py:$PATH"
 # export PATH="/opt/apps/krakenuniq-1.0.4/bin:$PATH"
 # export PATH="/opt/apps/malt-0.62:$PATH"
 # export PATH="/opt/apps/mapdamage-2.2.1/bin:$PATH"
