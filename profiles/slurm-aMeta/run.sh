@@ -12,9 +12,4 @@ set +u
 source "$PROFILE_DIR/tools.sh"
 set -u
 
-echo "Tools resolved on $(hostname):" >&2
-for tool in bowtie2 krakenuniq malt-run mapDamage samtools; do
-  printf '  %-12s %s\n' "$tool" "$(command -v "$tool" || echo 'NOT FOUND')" >&2
-done
-
 exec "${SNAKEMAKE_PYTHON:-python3}" -m snakemake --profile "$PROFILE_DIR" "$@"
