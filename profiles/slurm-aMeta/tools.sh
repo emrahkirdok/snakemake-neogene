@@ -14,6 +14,7 @@
 
 # --- Option B: plain install directories, added to the front of PATH -------
 # One line per tool directory (the folder that contains the executable).
+export PATH="$PROFILE_DIR/bin:$PATH"
 export PATH="/usr/local/sw/FastQC/:$PATH"
 export PATH="/usr/local/sw/bowtie2-2.5.1/$PATH"
 export PATH="/usr/local/sw/krakenuniq-1.0.4/:$PATH"
